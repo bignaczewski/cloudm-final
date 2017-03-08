@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
 
+  resources :posts, except: :show
+  get 'settings/index'
+
   devise_for :users
-  root 'visitors#index'
+  root 'posts#index'
 
 end

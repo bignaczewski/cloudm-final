@@ -38,6 +38,7 @@ gem 'haml-rails'
 gem 'simple_form'
 gem 'devise-bootstrap-views'
 gem 'devise'
+gem 'bootstrap-generators'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
