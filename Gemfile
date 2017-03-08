@@ -33,14 +33,8 @@ gem 'jbuilder', '~> 2.5'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
-gem 'bootstrap', '~> 4.0.0.alpha6'
-gem 'sprockets-rails'
-
-gem 'rails_layout'
-
-source 'https://rails-assets.org' do
-  gem 'rails-assets-tether', '>= 1.3.3'
-end
+gem 'bootstrap-sass'
+gem 'haml-rails'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
@@ -48,8 +42,6 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'better_errors'
-  gem 'html2haml'
-  gem 'rails_layout'
   # Inspection tool
   gem 'binding_of_caller'
   # Better Ruby console than irb
@@ -58,10 +50,6 @@ group :development do
   gem 'pry-byebug'
   # enables the inline variables view like RubyMine
   gem 'pry-inline'
-  # html.erb to haml converter
-  gem 'erb2haml' # http://htmltohaml.com good online converter
-  gem 'letter_opener'
-  gem 'launchy'
   gem 'rake-progressbar'
 end
 
