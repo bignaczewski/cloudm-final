@@ -39,6 +39,8 @@ gem 'simple_form'
 gem 'devise-bootstrap-views'
 gem 'devise'
 gem 'bootstrap-generators'
+gem 'kaminari'
+gem 'bootstrap-kaminari-views'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
