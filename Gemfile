@@ -41,6 +41,7 @@ gem 'devise'
 gem 'bootstrap-generators'
 gem 'kaminari'
 gem 'bootstrap-kaminari-views'
+gem 'seed_dump'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
