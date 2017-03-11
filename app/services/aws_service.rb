@@ -1,12 +1,5 @@
 require 'active_support/all'
 
-# 1. create db
-# 2. create application version
-# 3. create env with the specified app and db connection details
-# 4. migrate db
-# 5. delete app
-# 6. delete db
-
 class AwsService
 
   DB_INSTANCE_IDENTIFIER = 'cloudmpostgresql'
@@ -70,28 +63,18 @@ class AwsService
                                          {
                                              option_name: 'SECRET_KEY_BASE',
                                              value: SecureRandom.hex(64),
-                                         },
-                                         {
-                                             option_name: 'RDS_DB_NAME',
-                                             value: db_name
-                                         },
-                                         {
-                                             option_name: 'RDS_USERNAME',
-                                             value: username
-                                         },
-                                         {
-                                             option_name: 'RDS_PASSWORD',
-                                             value: pass
-                                         },
-                                         {
-                                             option_name: 'RDS_HOSTNAME',
-                                             value: hostname
-                                         },
-                                         {
-                                             option_name: 'RDS_PORT',
-                                             value: port
                                          }
-                                     ]
+                                     ] + generate_db_opts(hostname, db_name, username, pass, port)
+                                 })
+  end
+
+  # basically it only updates the db connection settings
+  def self.update_environment(hostname, env_name = ENV_NAME, db_name = DB_INSTANCE_IDENTIFIER, username = DB_USER_NAME,
+      pass = DB_USER_PASS, port = 5432)
+    EB_CLIENT.update_environment({
+                                     environment_name: env_name,
+                                     version_label: Random.rand.to_s,
+                                     option_settings: generate_db_opts(hostname, db_name, username, pass, port)
                                  })
   end
 
@@ -100,6 +83,30 @@ class AwsService
                                               environment_name: ENV_NAME,
                                               attribute_names: ['Status']
                                           })
+  end
+
+  def self.generate_db_opts(hostname, db_name = DB_INSTANCE_IDENTIFIER, username = DB_USER_NAME,
+      pass = DB_USER_PASS, port = 5432)
+    [{
+         option_name: 'RDS_DB_NAME',
+         value: db_name
+     },
+     {
+         option_name: 'RDS_USERNAME',
+         value: username
+     },
+     {
+         option_name: 'RDS_PASSWORD',
+         value: pass
+     },
+     {
+         option_name: 'RDS_HOSTNAME',
+         value: hostname
+     },
+     {
+         option_name: 'RDS_PORT',
+         value: port
+     }]
   end
 
   def self.get_latest_commid_id
