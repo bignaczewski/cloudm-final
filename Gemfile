@@ -42,6 +42,7 @@ gem 'bootstrap-generators'
 gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 gem 'seed_dump'
+gem 'aws-sdk-rails'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
