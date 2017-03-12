@@ -1,5 +1,3 @@
-require 'active_support/all'
-
 class AwsService
 
   DB_INSTANCE_IDENTIFIER = 'cloudmpostgresql'
@@ -7,6 +5,8 @@ class AwsService
   APP_NAME = 'cloudm'
   DB_USER_NAME = 'cloudmadmin'
   DB_USER_PASS = 'cloudmadminpass'
+  DB_PORT = '5432'
+
   RDS_CLIENT = Aws::RDS::Client.new
   EB_CLIENT = Aws::ElasticBeanstalk::Client.new
 
@@ -15,21 +15,26 @@ class AwsService
                                       allocated_storage: 5,
                                       db_instance_class: 'db.t2.micro',
                                       db_instance_identifier: DB_INSTANCE_IDENTIFIER,
+                                      db_name: DB_INSTANCE_IDENTIFIER,
                                       engine: 'postgres',
                                       master_user_password: DB_USER_PASS,
                                       master_username: DB_USER_NAME,
                                   })
   end
 
-  def self.delete_db
-    RDS_CLIENT.delete_db_instance({
-                                      db_instance_identifier: DB_INSTANCE_IDENTIFIER,
-                                      skip_final_snapshot: true,
-                                  })
+  # ActiveRecord::Base.establish_connection({:encoding => "unicode", :port => "5432",
+  #                                          :adapter => "postgresql", :database => "cloudmpostgresql",
+  #                                          :host => "cloudmpostgresql.clluercyfclq.eu-west-1.rds.amazonaws.com",
+  #                                          :username => "cloudmadmin", :password => "cloudmadminpass"}).connection
+  # ActiveRecord::Base.connected?
+
+  def self.get_db_endpoint_info
+    resp = RDS_CLIENT.describe_db_instances({db_instance_identifier: DB_INSTANCE_IDENTIFIER})
+    resp[:db_instances].first[:endpoint][:address] if resp[:db_instances].first[:endpoint]
   end
 
-  def self.check_db_info
-    RDS_CLIENT.describe_db_instances({db_instance_identifier: DB_INSTANCE_IDENTIFIER})
+  def self.delete_db
+    RDS_CLIENT.delete_db_instance({db_instance_identifier: DB_INSTANCE_IDENTIFIER, skip_final_snapshot: true})
   end
 
   def self.create_application_version
@@ -52,8 +57,8 @@ class AwsService
     EB_CLIENT.delete_application({application_name: APP_NAME})
   end
 
-  def self.create_environment(hostname, env_name = ENV_NAME, db_name = DB_INSTANCE_IDENTIFIER, username = DB_USER_NAME,
-      pass = DB_USER_PASS, port = 5432)
+  def self.create_environment(env_name = ENV_NAME, db_hostname = get_db_endpoint_info, db_name = DB_INSTANCE_IDENTIFIER,
+      db_username = DB_USER_NAME, db_pass = DB_USER_PASS, db_port = DB_PORT)
     EB_CLIENT.create_environment({
                                      application_name: APP_NAME,
                                      environment_name: env_name,
@@ -61,60 +66,71 @@ class AwsService
                                      solution_stack_name: '64bit Amazon Linux 2016.09 v2.3.2 running Ruby 2.3 (Puma)',
                                      option_settings: [
                                          {
+                                             namespace: 'aws:elasticbeanstalk:application:environment',
                                              option_name: 'SECRET_KEY_BASE',
-                                             value: SecureRandom.hex(64),
+                                             value: SecureRandom.hex(64)
+                                         },
+                                         {
+                                             namespace: 'aws:autoscaling:launchconfiguration',
+                                             option_name: 'InstanceType',
+                                             value: 't2.micro'
                                          }
-                                     ] + generate_db_opts(hostname, db_name, username, pass, port)
+                                     ] + generate_db_opts(db_hostname, db_name, db_username, db_pass, db_port)
                                  })
+  end
+
+  def self.get_env_info
+    resp = EB_CLIENT.describe_environments
+    info = resp[:environments].first
+    return info[:status], info[:health], info[:endpoint_url] if resp[:environments].first
   end
 
   # basically it only updates the db connection settings
-  def self.update_environment(hostname, env_name = ENV_NAME, db_name = DB_INSTANCE_IDENTIFIER, username = DB_USER_NAME,
-      pass = DB_USER_PASS, port = 5432)
+  def self.update_environment(env_name = ENV_NAME, db_hostname = get_db_endpoint_info, db_name = DB_INSTANCE_IDENTIFIER,
+      db_username = DB_USER_NAME, db_user_pass = DB_USER_PASS, db_port = DB_PORT)
     EB_CLIENT.update_environment({
                                      environment_name: env_name,
                                      version_label: Random.rand.to_s,
-                                     option_settings: generate_db_opts(hostname, db_name, username, pass, port)
+                                     option_settings: generate_db_opts(db_hostname, db_name, db_username, db_user_pass, db_port)
                                  })
   end
 
-  def self.check_env_status
-    EB_CLIENT.describe_environment_health({
-                                              environment_name: ENV_NAME,
-                                              attribute_names: ['Status']
-                                          })
+  def self.terminate_environment(env_name = ENV_NAME)
+    EB_CLIENT.terminate_environment({environment_name: env_name})
   end
 
-  def self.generate_db_opts(hostname, db_name = DB_INSTANCE_IDENTIFIER, username = DB_USER_NAME,
-      pass = DB_USER_PASS, port = 5432)
+  def self.generate_db_opts(db_hostname = get_db_endpoint_info, db_name = DB_INSTANCE_IDENTIFIER, db_username = DB_USER_NAME,
+      db_user_pass = DB_USER_PASS, db_port = DB_PORT)
     [{
+         namespace: 'aws:elasticbeanstalk:application:environment',
          option_name: 'RDS_DB_NAME',
          value: db_name
      },
      {
+         namespace: 'aws:elasticbeanstalk:application:environment',
          option_name: 'RDS_USERNAME',
-         value: username
+         value: db_username
      },
      {
+         namespace: 'aws:elasticbeanstalk:application:environment',
          option_name: 'RDS_PASSWORD',
-         value: pass
+         value: db_user_pass
      },
      {
+         namespace: 'aws:elasticbeanstalk:application:environment',
          option_name: 'RDS_HOSTNAME',
-         value: hostname
+         value: db_hostname
      },
      {
+         namespace: 'aws:elasticbeanstalk:application:environment',
          option_name: 'RDS_PORT',
-         value: port
+         value: db_port
      }]
   end
 
   def self.get_latest_commid_id
     codecommit = Aws::CodeCommit::Client.new
-    resp = codecommit.get_branch({
-                                     repository_name: 'cloudm',
-                                     branch_name: 'master',
-                                 })
+    resp = codecommit.get_branch({repository_name: 'cloudm', branch_name: 'master'})
     resp[:branch][:commit_id]
   end
 
