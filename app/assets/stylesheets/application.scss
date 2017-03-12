@@ -2,3 +2,7 @@
 @import "devise_bootstrap_views";
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+$growlyflash-top: 66px !default;
+
+@import "growlyflash";

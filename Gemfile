@@ -43,6 +43,9 @@ gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 gem 'seed_dump'
 gem 'aws-sdk-rails'
+gem 'rails-settings-cached'
+gem 'rails-settings-ui'
+gem 'growlyflash'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
