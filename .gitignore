@@ -93,3 +93,5 @@ tmp/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 /config/secrets.json
+!/.elasticbeanstalk/seed.config
+!/.elasticbeanstalk/

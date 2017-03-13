@@ -5,4 +5,4 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-User.create(email: 'admin@ucm.es', password: 'adminpass') # TODO: of course we should not keep passwords like this
+User.create(email: 'admin@ucm.es', password: 'adminpass') unless User.find_by(email: 'admin@ucm.es')

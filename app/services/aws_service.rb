@@ -134,9 +134,4 @@ class AwsService
     resp[:branch][:commit_id]
   end
 
-  # def self.migrate_data
-  #   # TODO
-  #   # polega na zdumpowaniu do seedow, uploadzie na server, odpalenie rake db:seed na serwerze
-  # end
-
 end

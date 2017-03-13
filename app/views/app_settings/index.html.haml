@@ -1,0 +1,32 @@
+%h3 Amazon actions and app configuration
+%p After each action wait a while and refresh a page to wait for the status information
+%br
+
+- if @endpoint
+  %p You have already created an Amazon database. Details:
+  = 'Db endpoint: ' + @endpoint
+  %p
+  = 'Connected to this db? ' + @connected.to_s
+  - unless @connected
+    %p
+    %p Connect to this db
+    = button_to 'Connect', action: 'connect_db'
+  - else
+    %p
+    %p Connect back to the localhost db
+    = button_to 'Connect', action: 'connect_db_local'
+  %p
+  %p Delete this db
+  = button_to 'Delete db', action: 'delete_db', confirm: 'Are you sure?'
+- else
+  %p Create an Amazon RDS database:
+  = button_to 'Create db', action: 'create_db'
+
+-#- if @env
+-#  = button_to 'Create app and env', :action => 'create_app_and_env'
+-#  = 'Env endpoint: ' + @env
+-#- else
+-#  - if @env_terminated
+-#    = button_to 'Terminate app', :action => 'terminate_app'
+-#  - else
+-#    = button_to 'Terminate env', :action => 'terminate_env'
