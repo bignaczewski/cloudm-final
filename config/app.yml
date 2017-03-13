@@ -1,0 +1,26 @@
+# config/app.yml for rails-settings-cached
+defaults: &defaults
+  rocket_name: "Foo"
+  limit: 123
+  launch_mode:
+    - auto
+    - manual
+  spaceports:
+    - plesetsk
+    - baikonur
+  style:
+    border_color: 'e0e0e0'
+    block_color: 'ffffff'
+    title:
+      font: "Tahoma"
+      size: "12"
+      color: '107821'
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

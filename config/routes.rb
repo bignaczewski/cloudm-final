@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
 
+  mount RailsSettingsUi::Engine, at: 'settings'
+
   resources :posts, except: :show
-  get 'settings/index'
 
   devise_for :users
+
   root 'posts#index'
 
 end

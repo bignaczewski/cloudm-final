@@ -1,0 +1,31 @@
+%ol.breadcrumb
+  %li.active
+    = t('settings.index.title')
+- if @casted_settings && @casted_settings[:errors].any?
+  .alert.alert-danger
+    = t('settings.index.settings_include_errors')
+-#- else
+  - flash.each do |key, value|
+    %div{:class => "alert alert-#{key}"}= value
+= form_tag [:update_all], method: :put, class: 'form' do
+  %table.table.table-striped
+    %thead
+      %tr
+        %th
+          = t('settings.index.description')
+        %th
+          = t('settings.index.value')
+    %tbody
+      - @settings.each do |name, value|
+        - errors = @errors.has_key?(name.to_sym) ? @errors[name.to_sym].join(', ') : nil
+        %tr{'data-name' => name}
+          %td
+            = I18n.t("settings.attributes.#{name}.name")
+          %td.setting-value
+            - setting_with_error = @casted_settings && @casted_settings[:errors].include?(name)
+            %div{:class => "form-group #{errors ? 'has-error' : ''}"}
+              = setting_field(name, value)
+              - if errors.present?
+                %span.help-block= errors
+  = submit_tag t('settings.index.save_all'), class: 'btn btn-primary btn-lg'
+
