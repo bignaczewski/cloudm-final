@@ -1,13 +1,16 @@
 - if current_user
-  %h3 Amazon actions and application configuration
+  %h3 Amazon AWS actions and application configuration
   %p After each action wait a while and refresh the page to wait for the status information
 
+  %hr
+  %h4 AWS RDS section
+  %p
   - if @endpoint
     %hr
-    %p You have already created an Amazon database. Details:
-    = "Db endpoint:  #{@endpoint}"
+    %p You have already created the AWS database. Details:
+    = "Status: #{@endpoint[0]} | Endpoint:  #{@endpoint[1]}"
     %p
-    = "Connected to this db?  #{@connected.to_s}"
+    = "Are you currently connected to this database?  #{@connected.to_s}"
     - unless @connected
       %p It means that you are connected to your local database
       %hr
@@ -21,35 +24,47 @@
       %hr
       %p Now you can run data migrations!
       = button_to 'Migrate data', action: 'invoke_data_migration'
-      %hr
       - if Rails.env.development?
+        %hr
         %p Connect back to your local database
         = button_to 'Connect', action: 'connect_db_local'
     %hr
-    %p Delete this db (ONLY if you do not have an application and an environment attached to it!)
+    %p Delete the AWS database (ONLY if you do not have an application and an environment attached to it!)
     = button_to 'Delete db', action: 'delete_db', confirm: 'Are you sure?'
   - else
     %hr
-    %p Create an Amazon database:
+    %p Create the AWS database:
     = button_to 'Create db', action: 'create_db'
 
+  %hr
+  %h4 AWS Elastic Beanstalk section
+  %p
   - if @apps_count < 1
     %hr
-    %p Create application and environment. Warning: set up the db first if you don't have one!
-    = button_to 'Create app and env', action: 'create_app_and_env'
-  - else
+    %p Create the application. Warning: set up the db first if you don't have one!
+    %p After creating the application, create the environment.
+    = button_to 'Create application', action: 'create_app'
+  - elsif @env
     %hr
-    = "Env status: #{@env[0]}, health: #{@env[1]}, endpoint: "
-    = link_to @env[2], "http://#{@env[2]}"
+    = "Environment status: #{@env[0]} | Health: #{@env[1]} | Endpoint: "
+    = link_to @env[2], "http://#{@env[2]}" if @env[2]
     %hr
     %p Here you can delete/terminate the application and its environment.
     %p The "Terminate app" button will show only when you terminate the environment first.
     - if @env[0] == 'Terminated'
-      = button_to 'Terminate app', action: 'terminate_app'
+      = button_to 'Terminate application', action: 'terminate_app', confirm: 'Are you sure?'
     - else
-      = button_to 'Terminate env', action: 'terminate_env'
+      = button_to 'Terminate environment', action: 'terminate_env', confirm: 'Are you sure?'
+  - else
+    %hr
+    %p Create the environment.
+    = button_to 'Create environment', action: 'create_env'
 
 - else
   %p Before performing any action, you need to log in as a superuser.
   %p If there is no superuser account, create one:
   = button_to 'Create a superuser account', action: 'create_superuser'
+
+%br
+%br
+%br

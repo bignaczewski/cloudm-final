@@ -7,7 +7,6 @@ class AppSettingsController < ApplicationController
       @apps_count = AwsService.describe_applications[0].size
       @endpoint = AwsService.get_db_endpoint_info
       @env = AwsService.get_env_info
-      @user = current_user
     rescue Aws::RDS::Errors::DBInstanceNotFound
     rescue Aws::RDS::Errors::ServiceError
       redirect_to posts_path, notice: 'AWS Service Error'
@@ -17,7 +16,7 @@ class AppSettingsController < ApplicationController
       redirect_to posts_path, notice: 'Database preparation: page refreshed'
     end
 
-    @connected = ActiveRecord::Base.connection_config[:host] == @endpoint
+    @connected = ActiveRecord::Base.connection_config[:host] == @endpoint[1]
   end
 
   def create_db
@@ -41,7 +40,7 @@ class AppSettingsController < ApplicationController
   def connect_db
     ActiveRecord::Base.establish_connection({encoding: 'unicode', port: AwsService::DB_PORT,
                                              adapter: 'postgresql', database: AwsService::DB_INSTANCE_IDENTIFIER,
-                                             host: AwsService.get_db_endpoint_info,
+                                             host: AwsService.get_db_endpoint_info[1],
                                              username: AwsService::DB_USER_NAME, password: AwsService::DB_USER_PASS}).connection
     redirect_to app_settings_path, notice: 'Connecting to the Amazon RDS...'
   end
@@ -51,11 +50,19 @@ class AppSettingsController < ApplicationController
     redirect_to app_settings_path, notice: 'Connecting to the local db...'
   end
 
-  def create_app_and_env
+  def create_app
     begin
       AwsService.create_application_version
+      redirect_to app_settings_path, notice: 'Application is being created...'
+    rescue Aws::ElasticBeanstalk::Errors::ServiceError
+      redirect_to app_settings_path, notice: 'Error. Check logs'
+    end
+  end
+
+  def create_env
+    begin
       AwsService.create_environment
-      redirect_to app_settings_path, notice: 'Application and environment are being created...'
+      redirect_to app_settings_path, notice: 'Environment is being created...'
     rescue Aws::ElasticBeanstalk::Errors::ServiceError
       redirect_to app_settings_path, notice: 'Error. Check logs'
     end

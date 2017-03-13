@@ -25,7 +25,7 @@ class AwsService
   def self.get_db_endpoint_info
     resp = RDS_CLIENT.describe_db_instances({db_instance_identifier: DB_INSTANCE_IDENTIFIER})
     first = resp[:db_instances].first
-    first[:endpoint][:address] if first[:db_instance_status] == 'available'
+    return first[:db_instance_status], first[:endpoint][:address]
   end
 
   def self.delete_db
@@ -52,7 +52,7 @@ class AwsService
     EB_CLIENT.delete_application({application_name: APP_NAME})
   end
 
-  def self.create_environment(env_name = ENV_NAME, db_hostname = get_db_endpoint_info, db_name = DB_INSTANCE_IDENTIFIER,
+  def self.create_environment(env_name = ENV_NAME, db_hostname = get_db_endpoint_info[1], db_name = DB_INSTANCE_IDENTIFIER,
       db_username = DB_USER_NAME, db_pass = DB_USER_PASS, db_port = DB_PORT)
     EB_CLIENT.create_environment({
                                      application_name: APP_NAME,
@@ -81,7 +81,7 @@ class AwsService
   end
 
   # basically it only updates the db connection settings
-  def self.update_environment(env_name = ENV_NAME, db_hostname = get_db_endpoint_info, db_name = DB_INSTANCE_IDENTIFIER,
+  def self.update_environment(env_name = ENV_NAME, db_hostname = get_db_endpoint_info[1], db_name = DB_INSTANCE_IDENTIFIER,
       db_username = DB_USER_NAME, db_user_pass = DB_USER_PASS, db_port = DB_PORT)
     EB_CLIENT.update_environment({
                                      environment_name: env_name,
@@ -94,7 +94,7 @@ class AwsService
     EB_CLIENT.terminate_environment({environment_name: env_name})
   end
 
-  def self.generate_db_opts(db_hostname = get_db_endpoint_info, db_name = DB_INSTANCE_IDENTIFIER, db_username = DB_USER_NAME,
+  def self.generate_db_opts(db_hostname = get_db_endpoint_info[1], db_name = DB_INSTANCE_IDENTIFIER, db_username = DB_USER_NAME,
       db_user_pass = DB_USER_PASS, db_port = DB_PORT)
     [{
          namespace: 'aws:elasticbeanstalk:application:environment',
