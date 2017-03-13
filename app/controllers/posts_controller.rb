@@ -25,7 +25,6 @@ class PostsController < ApplicationController
   # POST /posts.json
   def create
     @post = Post.new(post_params)
-
     respond_to do |format|
       if @post.save
         format.html { redirect_to posts_url, notice: 'Post was successfully created.' }

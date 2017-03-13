@@ -16,7 +16,7 @@ class AppSettingsController < ApplicationController
       redirect_to posts_path, notice: 'Database preparation: page refreshed'
     end
 
-    @connected = ActiveRecord::Base.connection_config[:host] == @endpoint[1]
+    @connected = ActiveRecord::Base.connection_config[:host] == @endpoint[1] if @endpoint
   end
 
   def create_db

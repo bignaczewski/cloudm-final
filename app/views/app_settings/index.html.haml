@@ -28,22 +28,26 @@
         %hr
         %p Connect back to your local database
         = button_to 'Connect', action: 'connect_db_local'
-    %hr
-    %p Delete the AWS database (ONLY if you do not have an application and an environment attached to it!)
-    = button_to 'Delete db', action: 'delete_db', confirm: 'Are you sure?'
+    - if @endpoint[0] == 'available'
+      %hr
+      %p Delete the AWS database (ONLY if you do not have an application and an environment attached to it!)
+      = button_to 'Delete database', action: 'delete_db', confirm: 'Are you sure?'
   - else
     %hr
     %p Create the AWS database:
-    = button_to 'Create db', action: 'create_db'
+    = button_to 'Create database', action: 'create_db'
 
   %hr
   %h4 AWS Elastic Beanstalk section
   %p
   - if @apps_count < 1
     %hr
-    %p Create the application. Warning: set up the db first if you don't have one!
-    %p After creating the application, create the environment.
-    = button_to 'Create application', action: 'create_app'
+    - if @endpoint and @endpoint[0] == 'available'
+      %p Create the application.
+      %p After creating the application, create the environment.
+      = button_to 'Create application', action: 'create_app'
+    - else
+      %p You cannot create the application without a database. Create the database first.
   - elsif @env
     %hr
     = "Environment status: #{@env[0]} | Health: #{@env[1]} | Endpoint: "
