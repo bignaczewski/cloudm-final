@@ -1,8 +1,48 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
-User.create(email: 'admin@ucm.es', password: 'adminpass') unless User.find_by(email: 'admin@ucm.es')
+Post.create!([
+  {title: "ddsjka", body: "kjasdsad"},
+  {title: "3j12j312", body: "j123kj123"},
+  {title: "k432kj432", body: "kj12kj312jk312"},
+  {title: "n432kj413", body: "4kj132jk324"},
+  {title: "4321432", body: "41234"},
+  {title: "432432", body: "4234324"},
+  {title: "1221124", body: "23432"},
+  {title: "424242", body: "12341234"},
+  {title: "dasdsa", body: "adsadsads"},
+  {title: "fadfsdfads", body: "fadssdfadafs"},
+  {title: "vzcxvczx", body: "vxzcvczxvczx"},
+  {title: "343214213", body: "2341234"},
+  {title: "1111", body: "11111"},
+  {title: "321312", body: "dadsadsads dadsadsads  dadsadsads dadsadsads dadsadsads dadsadsads "},
+  {title: ",mzxc,m", body: "m,czklwad"},
+  {title: "m,xcz,mcxz", body: "lkdaslkdas"},
+  {title: " xcczx,m", body: "askddsa"},
+  {title: "mcxz", body: "lkdaslkdsa"},
+  {title: "21i12i3ads", body: ",mnwkldsad"},
+  {title: "mczxcx", body: "lkdaslkdsa"},
+  {title: ",mxczmxcz", body: "lasdlkdas"},
+  {title: "cxz,cxzm", body: "lasdldsa"},
+  {title: "dsa,mdsa", body: "12kj213"},
+  {title: "dsa,mdsa", body: "12kj213"},
+  {title: "cxz,cxzm", body: "lasdldsa"},
+  {title: ",mxczmxcz", body: "lasdlkdas"},
+  {title: "mczxcx", body: "lkdaslkdsa"},
+  {title: "21i12i3ads", body: ",mnwkldsad"},
+  {title: "mcxz", body: "lkdaslkdsa"},
+  {title: " xcczx,m", body: "askddsa"},
+  {title: "m,xcz,mcxz", body: "lkdaslkdas"},
+  {title: ",mzxc,m", body: "m,czklwad"},
+  {title: "321312", body: "dadsadsads dadsadsads  dadsadsads dadsadsads dadsadsads dadsadsads "},
+  {title: "1111", body: "11111"},
+  {title: "343214213", body: "2341234"},
+  {title: "vzcxvczx", body: "vxzcvczxvczx"},
+  {title: "fadfsdfads", body: "fadssdfadafs"},
+  {title: "dasdsa", body: "adsadsads"},
+  {title: "424242", body: "12341234"},
+  {title: "1221124", body: "23432"},
+  {title: "432432", body: "4234324"},
+  {title: "4321432", body: "41234"},
+  {title: "n432kj413", body: "4kj132jk324"},
+  {title: "k432kj432", body: "kj12kj312jk312"},
+  {title: "3j12j312", body: "j123kj123"},
+  {title: "ddsjka", body: "kjasdsad"}
+])

@@ -22,15 +22,10 @@ class AwsService
                                   })
   end
 
-  # ActiveRecord::Base.establish_connection({:encoding => "unicode", :port => "5432",
-  #                                          :adapter => "postgresql", :database => "cloudmpostgresql",
-  #                                          :host => "cloudmpostgresql.clluercyfclq.eu-west-1.rds.amazonaws.com",
-  #                                          :username => "cloudmadmin", :password => "cloudmadminpass"}).connection
-  # ActiveRecord::Base.connected?
-
   def self.get_db_endpoint_info
     resp = RDS_CLIENT.describe_db_instances({db_instance_identifier: DB_INSTANCE_IDENTIFIER})
-    resp[:db_instances].first[:endpoint][:address] if resp[:db_instances].first[:endpoint]
+    first = resp[:db_instances].first
+    first[:endpoint][:address] if first[:db_instance_status] == 'available'
   end
 
   def self.delete_db
@@ -132,6 +127,10 @@ class AwsService
     codecommit = Aws::CodeCommit::Client.new
     resp = codecommit.get_branch({repository_name: 'cloudm', branch_name: 'master'})
     resp[:branch][:commit_id]
+  end
+
+  def self.describe_applications
+    EB_CLIENT.describe_applications
   end
 
 end

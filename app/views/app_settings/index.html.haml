@@ -1,32 +1,55 @@
-%h3 Amazon actions and app configuration
-%p After each action wait a while and refresh a page to wait for the status information
-%br
+- if current_user
+  %h3 Amazon actions and application configuration
+  %p After each action wait a while and refresh the page to wait for the status information
 
-- if @endpoint
-  %p You have already created an Amazon database. Details:
-  = 'Db endpoint: ' + @endpoint
-  %p
-  = 'Connected to this db? ' + @connected.to_s
-  - unless @connected
+  - if @endpoint
+    %hr
+    %p You have already created an Amazon database. Details:
+    = "Db endpoint:  #{@endpoint}"
     %p
-    %p Connect to this db
-    = button_to 'Connect', action: 'connect_db'
+    = "Connected to this db?  #{@connected.to_s}"
+    - unless @connected
+      %p It means that you are connected to your local database
+      %hr
+      %p Prepare data migrations (to be run later on the AWS database)
+      = button_to 'Prepare data migrations', action: 'prepare_data_migration'
+      %hr
+      %p Connect to your AWS database
+      = button_to 'Connect', action: 'connect_db'
+    - else
+      %p It means that you are connected to your AWS database
+      %hr
+      %p Now you can run data migrations!
+      = button_to 'Migrate data', action: 'invoke_data_migration'
+      %hr
+      - if Rails.env.development?
+        %p Connect back to your local database
+        = button_to 'Connect', action: 'connect_db_local'
+    %hr
+    %p Delete this db (ONLY if you do not have an application and an environment attached to it!)
+    = button_to 'Delete db', action: 'delete_db', confirm: 'Are you sure?'
   - else
-    %p
-    %p Connect back to the localhost db
-    = button_to 'Connect', action: 'connect_db_local'
-  %p
-  %p Delete this db
-  = button_to 'Delete db', action: 'delete_db', confirm: 'Are you sure?'
-- else
-  %p Create an Amazon RDS database:
-  = button_to 'Create db', action: 'create_db'
+    %hr
+    %p Create an Amazon database:
+    = button_to 'Create db', action: 'create_db'
 
--#- if @env
--#  = button_to 'Create app and env', :action => 'create_app_and_env'
--#  = 'Env endpoint: ' + @env
--#- else
--#  - if @env_terminated
--#    = button_to 'Terminate app', :action => 'terminate_app'
--#  - else
--#    = button_to 'Terminate env', :action => 'terminate_env'
+  - if @apps_count < 1
+    %hr
+    %p Create application and environment. Warning: set up the db first if you don't have one!
+    = button_to 'Create app and env', action: 'create_app_and_env'
+  - else
+    %hr
+    = "Env status: #{@env[0]}, health: #{@env[1]}, endpoint: "
+    = link_to @env[2], "http://#{@env[2]}"
+    %hr
+    %p Here you can delete/terminate the application and its environment.
+    %p The "Terminate app" button will show only when you terminate the environment first.
+    - if @env[0] == 'Terminated'
+      = button_to 'Terminate app', action: 'terminate_app'
+    - else
+      = button_to 'Terminate env', action: 'terminate_env'
+
+- else
+  %p Before performing any action, you need to log in as a superuser.
+  %p If there is no superuser account, create one:
+  = button_to 'Create a superuser account', action: 'create_superuser'

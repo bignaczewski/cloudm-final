@@ -33,6 +33,7 @@ gem 'jbuilder', '~> 2.5'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
+
 gem 'bootstrap-sass'
 gem 'haml-rails'
 gem 'simple_form'
@@ -43,8 +44,6 @@ gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 gem 'seed_dump'
 gem 'aws-sdk-rails'
-gem 'rails-settings-cached'
-gem 'rails-settings-ui'
 gem 'growlyflash'
 
 group :development do
