@@ -38,7 +38,7 @@ class AppSettingsController < ApplicationController
   end
 
   def connect_db_local
-    ActiveRecord::Base.establish_connection({database: 'cloudm_development'}).connection
+    ActiveRecord::Base.establish_connection({database: 'cloudm_development', adapter: 'postgresql'}).connection
     redirect_to app_settings_path, notice: 'Connecting to the local db...'
   end
 

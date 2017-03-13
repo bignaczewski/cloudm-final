@@ -6,8 +6,6 @@ Rails.application.routes.draw do
   post 'connect_db', to: 'app_settings#connect_db'
   post 'connect_db_local', to: 'app_settings#connect_db_local'
 
-  mount RailsSettingsUi::Engine, at: 'settings'
-
   resources :posts, except: :show
 
   devise_for :users
