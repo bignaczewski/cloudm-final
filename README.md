@@ -1,6 +1,6 @@
 # README
 
-UCM final project
+UCM final project. Copying is not allowed.
 
 Steps to take:
 
