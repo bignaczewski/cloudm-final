@@ -1,6 +1,6 @@
 # README
 
-UCM final project. Copying is not allowed.
+UCM final project (Ruby on Rails). Copying is not allowed.
 
 Description: The goal of this work is to create an integrator that makes the communication with cloud provider(s) (Amazon in this case) as easy and quick as possible, aiming to be used even by non-technical users. It supports the full process of application deployment and termination along with cloud-based database management, what drastically lowers the time needed to set up the infrastructure.
 
